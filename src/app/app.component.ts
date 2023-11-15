@@ -1,14 +1,36 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import {Component, ElementRef, inject, QueryList, ViewChildren} from '@angular/core';
+import {CommonModule, DOCUMENT} from '@angular/common';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'vt-targets';
+
+  @ViewChildren('element') elementRefs: QueryList<ElementRef> | undefined;
+
+  elements: string[] = [];
+  private colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'white'];
+  private document = inject(DOCUMENT);
+
+  addElement(){
+    this.elements.push(this.colors[Math.floor(Math.random() * this.colors.length)]);
+  }
+
+  toggleTransform(){
+    (this.document as any).startViewTransition(() => {
+      this.elementRefs?.forEach((elementRef) => {
+        if(elementRef.nativeElement.classList.contains('transform')){
+          elementRef.nativeElement.classList.remove('transform');
+        }
+        else {
+          elementRef.nativeElement.classList.add('transform');
+        }
+      });
+    });
+  }
 }
